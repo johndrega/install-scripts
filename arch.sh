@@ -1,8 +1,13 @@
 #! /bin/bash
+
 set -e -o pipefail
 
 if [ "$(whoami)" != root ]; then
-	echo "Error: Super user privileges are required"
+	echo "Error:: Super user privileges are required"
+	exit 1
+fi
+if [ "$(logname)" == root ]; then
+	echo "Error:: The 'root' user is not allowed, use 'sudo' with your user"
 	exit 1
 fi
 
@@ -20,11 +25,13 @@ sublimeMerge() {
 docker() {
 	pacman -Syu docker docker-compose --noconfirm
 
+	# May require machine to be rebooted before the service will
+	# start if the kernel was updated since boot.
 	systemctl start docker.service
 	systemctl enable docker.service
 
 	# really need to see if this exists first
-	groupadd docker
+	# groupadd docker
 	gpasswd -a john docker
 }
 
@@ -40,6 +47,64 @@ nodeVersionManager() {
 # a pretty large dependency
 windowManager() {
 	pacman -Syu xmonad xmobar xmonad-contrib feh --noconfirm
+}
+
+aur() {
+	cd ~/aur
+	git clone https://aur.archlinux.org/"$1".git
+	cd "$1"
+
+	makepkg -sic --noconfirm
+}
+
+googleChrome() {
+	cd ~/aur
+	git clone https://aur.archlinux.org/google-chrome.git
+	cd google-chrome
+
+	makepkg -sic --noconfirm
+}
+
+vsCode() {
+	cd ~/aur
+	git clone https://aur.archlinux.org/visual-studio-code-bin.git
+	cd visual-studio-code-bin
+
+	makepkg -sic --noconfirm
+}
+
+datagrip() {
+	cd ~/aur
+	git clone https://aur.archlinux.org/datagrip.git
+	cd datagrip
+
+	makepkg -sic --noconfirm
+}
+
+postman() {
+	cd ~/aur
+	git clone https://aur.archlinux.org/postman-bin.git
+	cd postman-bin
+
+	makepkg -sic --noconfirm
+}
+
+installAurs() {
+	if [ "$(whoami)" == root ]; then
+		echo "Error:: AURs must not be built as root"
+		exit 1
+	fi
+
+	# testing this
+	aur google-chrome
+	aur visual-studio-code-bin
+	aur datagrip
+	aur postman-bin
+
+	# googleChrome
+	# vsCode
+	# datagrip
+	# postman
 }
 
 installPackages() {
@@ -67,6 +132,8 @@ installPackages() {
 	rust
 	nodeVersionManager
 	windowManager
+
+	sudo -u "$(logname)" installAurs
 }
 
 configureDotfiles() {
@@ -82,15 +149,6 @@ installPackages
 
 echo "Reboot machine for changes to be finalised"
 echo "You will have to install a version of nodejs using the chosen node version manager"
-
-# Still need these to be done:
-
-# vs code - aur
-# datagrip - aur
-# postman - aur
-# google chrome - aur
-# tylerbrock/saw - aur
-# nvm - aur
 
 # These super work specific tasks should be added to a work specific script
 # I have had to edit the hosts file
