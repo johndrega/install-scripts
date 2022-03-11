@@ -7,17 +7,18 @@ if [ "$(whoami)" != root ]; then
 	exit 1
 fi
 if [ "$(logname)" == root ]; then
-	echo "Error:: The 'root' user is not allowed, use 'sudo' with your user"
+	echo "Error:: Use 'sudo' with your user instead of 'root'"
 	exit 1
 fi
 
 sublimeMerge() {
 	curl -O https://download.sublimetext.com/sublimehq-pub.gpg &&
-		sudo pacman-key --add sublimehq-pub.gpg && sudo pacman-key --lsign-key 8A8F901A &&
+		pacman-key --add sublimehq-pub.gpg && pacman-key --lsign-key 8A8F901A &&
 		rm sublimehq-pub.gpg
 
+	# TODO: If this is already in the pacman conf, then don't add it again
 	echo -e "\n[sublime-text]\nServer = https://download.sublimetext.com/arch/stable/x86_64" |
-		sudo tee -a /etc/pacman.conf
+		tee -a /etc/pacman.conf
 
 	pacman -Syu sublime-merge --noconfirm
 }
@@ -30,8 +31,9 @@ docker() {
 	systemctl start docker.service
 	systemctl enable docker.service
 
-	# really need to see if this exists first
-	# groupadd docker
+	if ! grep docker /etc/group; then
+		groupadd docker
+	fi
 	gpasswd -a john docker
 }
 
@@ -51,81 +53,37 @@ windowManager() {
 
 aur() {
 	cd ~/aur
-	git clone https://aur.archlinux.org/"$1".git
+	sudo -u "$(logname)" git clone https://aur.archlinux.org/"$1".git
 	cd "$1"
 
-	makepkg -sic --noconfirm
-}
-
-googleChrome() {
-	cd ~/aur
-	git clone https://aur.archlinux.org/google-chrome.git
-	cd google-chrome
-
-	makepkg -sic --noconfirm
-}
-
-vsCode() {
-	cd ~/aur
-	git clone https://aur.archlinux.org/visual-studio-code-bin.git
-	cd visual-studio-code-bin
-
-	makepkg -sic --noconfirm
-}
-
-datagrip() {
-	cd ~/aur
-	git clone https://aur.archlinux.org/datagrip.git
-	cd datagrip
-
-	makepkg -sic --noconfirm
-}
-
-postman() {
-	cd ~/aur
-	git clone https://aur.archlinux.org/postman-bin.git
-	cd postman-bin
-
-	makepkg -sic --noconfirm
+	sudo -u "$(logname)" makepkg -sic --noconfirm
 }
 
 installAurs() {
-	if [ "$(whoami)" == root ]; then
-		echo "Error:: AURs must not be built as root"
-		exit 1
-	fi
+	sudo -u "$(logname)" mkdir /home/"$(logname)"/aur
 
-	# testing this
 	aur google-chrome
 	aur visual-studio-code-bin
 	aur datagrip
 	aur postman-bin
-
-	# googleChrome
-	# vsCode
-	# datagrip
-	# postman
 }
 
 installPackages() {
-	pacman -Syu binutils \
-		make \
-		gcc \
-		fakeroot \
+	pacman -Syu base-devl \
+		alacritty \
+		aws-cli \
 		expac \
-		yajl \
 		git \
+		htop \
+		neovim \
+		postgresql-libs \
+		python-pip \
+		redis \
+		rofi \
 		xorg-server \
 		xorg-xinit \
-		alacritty \
-		neovim \
-		redis \
-		htop \
-		rofi \
-		aws-cli \
-		zsh \
-		python-pip \
-		postgresql-libs --noconfirm
+		yajl \
+		zsh --noconfirm
 
 	sublimeMerge
 	docker
@@ -133,10 +91,10 @@ installPackages() {
 	nodeVersionManager
 	windowManager
 
-	sudo -u "$(logname)" installAurs
+	installAurs
 }
 
-configureDotfiles() {
+pullDotfiles() {
 	cd ~
 	git init .
 	git remote add origin https://github.com/johndrega/dotfiles.git
@@ -145,10 +103,9 @@ configureDotfiles() {
 }
 
 installPackages
-# configureDotfiles
+# pullDotfiles
 
-echo "Reboot machine for changes to be finalised"
-echo "You will have to install a version of nodejs using the chosen node version manager"
+echo "You'll need to reboot for certain changes to take effect"
 
 # These super work specific tasks should be added to a work specific script
 # I have had to edit the hosts file
