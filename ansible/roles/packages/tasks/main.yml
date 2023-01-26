@@ -1,0 +1,11 @@
+---
+# tasks file for packages
+- name: Install base packages
+  ansible.builtin.apt:
+    name:
+      - git
+      - htop
+      - postgresql
+    state: present
+
+# some of the packages are not in apt so we need to do extra work
