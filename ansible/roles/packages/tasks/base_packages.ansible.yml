@@ -1,0 +1,30 @@
+---
+- name: Install base packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - git
+      - curl
+      - rofi
+      - feh
+      - jq
+      - htop
+      - postgresql
+      - awesome
+      - apt-transport-https
+      - ca-certificates 
+      - gnupg
+      - python3-pip
+      - fuse
+      - libfuse2
+    state: present
+    update_cache: yes
+
+# This might have been removed manually, but just to be sure lets make sure that is
+# not hanging around at all
+- name: Remove unwanted packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - unattended-upgrades
+    state: absent
