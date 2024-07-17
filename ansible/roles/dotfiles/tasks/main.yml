@@ -1,7 +1,0 @@
----
-# tasks file for dotfiles
-- name: Quick test task to see if things are working
-  ansible.builtin.copy:
-    src: "test.file"
-    dest: "~/"
-    mode: "0400"

@@ -1,0 +1,13 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Setup machine
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: Load vars
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/vars/main.ansible-vars.yml"
+
+    - name: Install packages
+      ansible.builtin.include_tasks:
+        file: "{{ playbook_dir }}/tasks/packages/main.yml"

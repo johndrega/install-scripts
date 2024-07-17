@@ -1,0 +1,11 @@
+---
+- name: Config | Set default editor
+  ansible.builtin.command: update-alternatives --set editor /usr/bin/vim.basic
+  become: true
+  changed_when: true
+
+- name: Config | Set default shell
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    shell: /usr/bin/zsh
+  become: true

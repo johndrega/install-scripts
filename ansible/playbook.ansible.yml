@@ -1,9 +1,0 @@
-#!/usr/bin/env ansible-playbook
----
-- name: Setup development environment
-  hosts: all
-  become: false
-  gather_facts: true
-  roles:
-    - packages
-    - dotfiles

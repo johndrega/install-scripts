@@ -1,0 +1,27 @@
+---
+- name: Install base packages
+  ansible.builtin.import_tasks: base_packages.ansible.yml
+
+- name: Install pip packages
+  ansible.builtin.import_tasks: pip_packages.ansible.yml
+
+- name: Install snap packages
+  ansible.builtin.import_tasks: snap.ansible.yml
+
+- name: Install docker
+  ansible.builtin.import_tasks: docker.ansible.yml
+
+- name: Install google-chrome
+  ansible.builtin.import_tasks: google-chrome.ansible.yml
+
+- name: Install nvim
+  ansible.builtin.import_tasks: nvim.ansible.yml
+
+- name: Install nvm
+  ansible.builtin.import_tasks: nvm.ansible.yml
+
+- name: Install sublime merge
+  ansible.builtin.import_tasks: sublimemerge.ansible.yml
+
+- name: Install vs-code
+  ansible.builtin.import_tasks: vscode.ansible.yml

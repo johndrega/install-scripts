@@ -1,0 +1,25 @@
+---
+- name: Packages | Base Packages | Update apt cache
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Packages | Base Packages | Install base packages
+  become: true
+  ansible.builtin.package:
+    name: "{{ package.name }}"
+    version: "{{ package.version | default('latest') }}"
+    state: present
+    update_cache: false
+  loop: "{{ base_packages.add }}"
+  loop_control:
+    loop_var: package
+
+- name: Packages | Base Packages | Remove unwanted packages
+  become: true
+  ansible.builtin.apt:
+    name: "{{ package.name }}"
+    state: absent
+  loop: "{{ base_packages.remove }}"
+  loop_control:
+    loop_var: package

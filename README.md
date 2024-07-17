@@ -1,0 +1,75 @@
+# Ubuntu configuration scripts
+
+Ansible configuration to setup consistent development environments.
+
+Example vars file:
+
+```yaml
+---
+# ------------------------------------------------------------------------------
+# Define a list of directories to be created if they don't already exist
+# ------------------------------------------------------------------------------
+directories:
+  open_source_dir: /home/{{ ansible_user }}/open-source
+  work_dir: /home/{{ ansible_user }}/work
+  projects_dir: /home/{{ ansible_user }}/projects
+
+# ------------------------------------------------------------------------------
+# Define lists of:
+#   - Base packages to be installed, a version may optionally be provided, otherwise
+#   the latest version will be installed.
+#   - Packages to be removed, for packages that are installed by default but are not
+#   wanted or needed.
+# ------------------------------------------------------------------------------
+base_packages:
+  add:
+    - name: git
+  remove:
+    - name: unattended-upgrades
+
+# ------------------------------------------------------------------------------
+# Define lists of packages to be installed using the snap package manager. For some
+# software it is easier to install using snap, for example, alacritty.
+# ------------------------------------------------------------------------------
+snap_packages:
+  - name: alacritty
+
+# ------------------------------------------------------------------------------
+# Define lists of packages to be installed using pip
+# ------------------------------------------------------------------------------
+pip_packages:
+  - name: pipenv
+    version: latest
+  - name: awscli
+    version: latest
+
+# ------------------------------------------------------------------------------
+# Installs that require additional steps and/or configuration:
+# ------------------------------------------------------------------------------
+additional_software:
+  docker:
+    install: true
+    version: latest
+    add_user_to_group: true
+
+  rancher_desktop:
+    install: true
+    version: latest
+
+  golang:
+    install: true
+    version: latest
+
+  nodejs:
+    install: true
+    nvm_version: v0.39.7
+    node_version: latest_lts
+
+  jetbrains:
+    install: true
+    applications:
+      - name: datagrip
+        version: latest
+      - name: pycharm-professional
+        version: latest
+```

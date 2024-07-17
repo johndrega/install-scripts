@@ -1,0 +1,9 @@
+---
+- name: Packages | Pip Packges | Install pip packages
+  ansible.builtin.pip:
+    name: "{{ package.name }}"
+    version: "{{ package.version }}"
+    state: present
+  loop: "{{ pip_packages }}"
+  loop_control:
+    loop_var: package

@@ -1,7 +1,0 @@
----
-- name: Download nvim app image
-  become: true
-  ansible.builtin.get_url:
-    url: https://github.com/neovim/neovim/releases/download/stable/nvim.appimage
-    dest: /opt/
-    mode: "0551" 

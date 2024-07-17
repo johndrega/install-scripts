@@ -1,0 +1,8 @@
+---
+- name: Packages | Snap Packges | Install snap packages
+  community.general.snap:
+    name: "{{ package.name }}"
+    state: present
+  loop: "{{ snap_packages }}"
+  loop_control:
+    loop_var: package

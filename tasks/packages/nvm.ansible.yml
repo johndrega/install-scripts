@@ -1,0 +1,24 @@
+---
+- name: Packages | NVM | Download NVM installation script
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/nvm-sh/nvm/{{ additional_software.nodejs.nvm_version }}/install.sh
+    dest: /tmp/install_nvm.sh
+    mode: "0755"
+
+- name: Packages | NVM | Run NVM installation script
+  ansible.builtin.command: /tmp/install_nvm.sh creates=/home/{{ ansible_user }}/.nvm
+
+- name: Packages | NVM | Load NVM environment
+  ansible.builtin.shell: |
+    export NVM_DIR="/home/{{ ansible_user }}/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  args:
+    executable: /usr/bin/zsh
+  changed_when: true
+
+- name: Packages | NVM | Install Node.js
+  ansible.builtin.command: nvm install {{ additional_software.nodejs.nodejs_version }}
+  args:
+    executable: /usr/bin/zsh
+  changed_when: true
